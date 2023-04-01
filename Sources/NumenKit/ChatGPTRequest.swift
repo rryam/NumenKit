@@ -1,7 +1,7 @@
 import Foundation
 
 /// A request to generate a response from ChatGPT.
-public struct ChatGPTRequest {
+public struct ChatGPTCompletionRequest {
 
   private var model: String
   private var prompt: String
@@ -34,8 +34,8 @@ public struct ChatGPTRequest {
   }
 
   /// Generates a response from ChatGPT based on the request.
-  public func response() async throws -> ChatGPTResponse {
-    let url = URL(string: "https://api.openai.com/v1/completions")!
+  public func response() async throws -> ChatGPTCompletionResponse {
+    let url = URL(string: "https://api.openai.com/v1/chat/completions")!
     var request = URLRequest(url: url)
 
     request.httpMethod = "POST"
@@ -45,7 +45,8 @@ public struct ChatGPTRequest {
 
     request.httpBody = try JSONEncoder().encode(requestBody)
     let response = try await URLSession.shared.data(for: request)
-    return try JSONDecoder().decode(ChatGPTResponse.self, from: response.0)
+    try print(response.0.printJSON())
+    return try JSONDecoder().decode(ChatGPTCompletionResponse.self, from: response.0)
   }
 }
 
@@ -71,7 +72,7 @@ private struct ChatGPTRequestBody: Encodable {
 }
 
 /// A response from ChatGPT.
-public struct ChatGPTResponse: Decodable {
+public struct ChatGPTCompletionResponse: Decodable {
   public let id: String
   public let object: String
   public let created: Int
@@ -96,5 +97,17 @@ public struct ChatGPTUsage: Decodable {
     case promptTokens = "prompt_tokens"
     case completionTokens = "completion_tokens"
     case totalTokens = "total_tokens"
+  }
+}
+
+extension Data {
+ public func printJSON() throws -> String {
+    let json = try JSONSerialization.jsonObject(with: self, options: [])
+    let data = try JSONSerialization.data(withJSONObject: json, options: .prettyPrinted)
+
+    guard let jsonString = String(data: data, encoding: .utf8) else {
+      throw URLError(.cannotDecodeRawData)
+    }
+    return jsonString
   }
 }

@@ -17,9 +17,16 @@ public class NumenKit {
 }
 
 extension NumenKit {
-  public func response(for prompt: String, model: String = "text-davinci-003", temperature: Double = 0.4, maxTokens: Int = 2063, topP: Double = 1, frequencyPenalty: Double = 0, presencePenalty: Double = 0) async throws -> String {
-    let request = ChatGPTRequest(model: model, prompt: prompt, temperature: temperature, maxTokens: maxTokens, topP: topP, frequencyPenalty: frequencyPenalty, presencePenalty: presencePenalty, authorization: Self.apiKey)
+  public func response(prompt: String, model: String = "text-davinci-003", temperature: Double = 0.4, maxTokens: Int = 2063, topP: Double = 1, frequencyPenalty: Double = 0, presencePenalty: Double = 0) async throws -> String {
+    let request = ChatGPTCompletionRequest(model: model, prompt: prompt, temperature: temperature, maxTokens: maxTokens, topP: topP, frequencyPenalty: frequencyPenalty, presencePenalty: presencePenalty, authorization: Self.apiKey)
     let response = try await request.response()
     return response.choices[0].text
+  }
+
+  public func response(message: String) async throws -> ChatGPTChatResponse {
+    let request = ChatGPTChatRequest(model: "gpt-3.5-turbo", message: .init(role: "user", content: message), apiKey: Self.apiKey)
+    let response = try await request.response()
+
+    return response
   }
 }
