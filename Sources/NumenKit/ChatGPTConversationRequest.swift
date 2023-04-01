@@ -1,7 +1,14 @@
+//
+//  ChatGPTChatRequest.swift
+//  NumenKit
+//
+//  Created by Rudrank Riyam on 01/04/23.
+//
+
 import Foundation
 
 /// A request that your app uses to generate a response for a given message in a chat conversation using the OpenAI GPT-3 API.
-public struct ChatGPTChatRequest {
+public struct ChatGPTConversationRequest {
 
   private var model: String
   private var apiKey: String
@@ -29,28 +36,18 @@ public struct ChatGPTChatRequest {
 
   /// Fetches the response for the given message(s) in the chat conversation.
   public func response() async throws -> ChatGPTChatResponse {
-    let url = try chatGPTConversationEndpointURL
-    var urlRequest = URLRequest(url: url)
-    urlRequest.httpMethod = "POST"
-    urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    urlRequest.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-
-    let requestBody = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages))
-    urlRequest.httpBody = requestBody
-
-    let response = try await URLSession.shared.data(for: urlRequest)
-    return try JSONDecoder().decode(ChatGPTChatResponse.self, from: response.0)
+    let data = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages))
+    let request = NumenPostRequest<ChatGPTChatResponse>(key: apiKey, url: conversationEndpointURL, data: data)
+    let response = try await request.response()
+    return response
   }
 }
 
-extension ChatGPTChatRequest {
-  internal var chatGPTConversationEndpointURL: URL {
-    get throws {
-      guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
-        throw URLError(.badURL)
-      }
-      return url
-    }
+extension ChatGPTConversationRequest {
+  internal var conversationEndpointURL: URL? {
+    var components = NumenURLComponents()
+    components.path = "chat/completions"
+    return components.url
   }
 }
 
@@ -74,7 +71,7 @@ public struct ChatGPTChatRequestBody: Encodable {
   }
 }
 
-public struct ChatGPTChatResponse: Decodable {
+public struct ChatGPTChatResponse: Codable {
   let id, object: String
   let created: Int
   public let choices: [ChatGPTChatChoice]

@@ -1,3 +1,10 @@
+//
+//  NumenKit.swift
+//  NumenKit
+//
+//  Created by Rudrank Riyam on 01/04/23.
+//
+
 public let Numen = NumenKit.default
 
 public class NumenKit {
@@ -24,7 +31,7 @@ extension NumenKit {
   }
 
   public func response(message: String) async throws -> ChatGPTChatResponse {
-    let request = ChatGPTChatRequest(model: "gpt-3.5-turbo", message: .init(role: "user", content: message), apiKey: Self.apiKey)
+    let request = ChatGPTConversationRequest(model: "gpt-3.5-turbo", message: .init(role: "user", content: message), apiKey: Self.apiKey)
     let response = try await request.response()
 
     return response

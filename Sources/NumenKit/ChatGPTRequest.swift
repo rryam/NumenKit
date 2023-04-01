@@ -1,3 +1,10 @@
+//
+//  ChatGPTCompletionRequest.swift
+//  NumenKit
+//
+//  Created by Rudrank Riyam on 01/04/23.
+//
+
 import Foundation
 
 /// A request to generate a response from ChatGPT.
