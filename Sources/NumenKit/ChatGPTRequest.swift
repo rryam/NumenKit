@@ -72,19 +72,29 @@ private struct ChatGPTRequestBody: Encodable {
 
 /// A response from ChatGPT.
 public struct ChatGPTResponse: Decodable {
+  public let id: String
+  public let object: String
+  public let created: Int
+  public let model: String
   public let choices: [ChatGPTResponseChoice]
+  public let usage: ChatGPTUsage
 }
 
-/// A choice in a response from ChatGPT.
 public struct ChatGPTResponseChoice: Decodable {
   public let text: String
   public let index: Int
-  public let logprobs: ChatGPTResponseChoiceLogprobs
+  public let logprobs: [String: [String: Double]]?
+  public let finishReason: String
 }
 
-/// Log probabilities in a response choice from ChatGPT.
-public struct ChatGPTResponseChoiceLogprobs: Decodable {
-  public let tokens: [String]
-  public let tokenLogprobs: [Double]
-  public let topLogprobs: [[String: Double]]
+public struct ChatGPTUsage: Decodable {
+  public let promptTokens: Int
+  public let completionTokens: Int
+  public let totalTokens: Int
+
+  enum CodingKeys: String, CodingKey {
+    case promptTokens = "prompt_tokens"
+    case completionTokens = "completion_tokens"
+    case totalTokens = "total_tokens"
+  }
 }
