@@ -1,2 +1,3 @@
 # NumenKit
-Yet another ChatGPT Swift package.
+
+A description of this package.
