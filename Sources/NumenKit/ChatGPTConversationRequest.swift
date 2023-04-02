@@ -36,7 +36,7 @@ public struct ChatGPTConversationRequest {
 
   /// Fetches the response for the given message(s) in the chat conversation.
   public func response() async throws -> ChatGPTChatResponse {
-    let data = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages, temperature: 0.2))
+    let data = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages, temperature: 0.1))
     let request = NumenPostRequest<ChatGPTChatResponse>(key: apiKey, url: conversationEndpointURL, data: data)
     let response = try await request.response()
     return response
