@@ -36,7 +36,7 @@ public struct ChatGPTConversationRequest {
 
   /// Fetches the response for the given message(s) in the chat conversation.
   public func response() async throws -> ChatGPTChatResponse {
-    let data = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages))
+    let data = try JSONEncoder().encode(ChatGPTChatRequestBody(model: model, messages: messages, temperature: 0.2))
     let request = NumenPostRequest<ChatGPTChatResponse>(key: apiKey, url: conversationEndpointURL, data: data)
     let response = try await request.response()
     return response
@@ -64,10 +64,12 @@ public struct ChatGPTMessage: Encodable {
 public struct ChatGPTChatRequestBody: Encodable {
   public let model: String
   public let messages: [ChatGPTMessage]
+  public let temperature: Double
 
-  public init(model: String, messages: [ChatGPTMessage]) {
+  public init(model: String, messages: [ChatGPTMessage], temperature: Double) {
     self.model = model
     self.messages = messages
+    self.temperature = temperature
   }
 }
 
